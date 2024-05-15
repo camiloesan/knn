@@ -10,52 +10,53 @@ X = iris.data.features
 y = iris.data.targets 
 
 def calc_dist_euclidiana(x, y):
-    print ("x:", x, "y:", y)
-    return np.sqrt(np.sum((x - y) ** 2))
+    result = np.sqrt(np.sum((x - y) ** 2))
+    return result 
 
 def knn(k):
-    # seleccionar valores de la primera columna
-    values = X.iloc[:, 0]
+    # seleccionar valores de las primeras 3 columnas
+    values = X.iloc[:, :3]
 
     # select 100 of the 150 values and delete them from values
-    s = random.sample(list(enumerate(values)), 100)
-    indices_to_delete = [index for index, _ in s]
-    values_idx = list(enumerate(values))
-    values_idx = [x for x in values_idx if x[0] not in indices_to_delete]
-    values = values.drop(indices_to_delete)
+    values_total = X.iloc[:, :3]
+    training_sample = values_total.sample(100)
     
-    # calcular distancia euclidiana entre el primer individuo y los 100 seleccionados
-    distancias = []
-    random_index = random.randint(0, 50) # en lugar de random, hacer por cada individuo
-    individuo = values_idx[random_index]
-    clase_ind = y.iloc[individuo[0]]
-    print("Individuo:", individuo)
-    for i in range(len(s)):
-        dist = calc_dist_euclidiana(individuo[1], s[i][1])
-        distancias.append(dist)
+    # delete from values_total the 100 selected values
+    values = values_total.drop(training_sample.index)
+    
+    coincidencias = 0
+    for count, idx in enumerate(values.index):
+        distancias = []
+        individuo = values.iloc[count]
+        clase_ind = y.iloc[idx]
+        # calcular distancia euclidiana entre el primer individuo y los 100 seleccionados
+        for i in range(len(training_sample)):
+            dist = calc_dist_euclidiana(individuo[1], training_sample.iloc[i])
+            distancias.append(dist)
+
+        # sort distancias from smallest to largest / may be wrong
+        distancias.sort()        
+        temp_order_sample = training_sample.iloc[np.argsort(distancias)]
+
+        # select first k distances
+        k_distancias = distancias[:k]
+        print("Distancias K:", k_distancias)
+
+        # determine classes of the k selected individuals
+        clases = []
+        for i in range(k):
+            index = temp_order_sample.index[i]
+            clase = y.iloc[index]
+            clases.append(clase.values[0])
         
-    # sort distancias from smallest to largest
-    distancias.sort()
-
-    # apply the same sort criteria to s
-    s.sort(key=lambda x: calc_dist_euclidiana(individuo[1], x[1]))
-
-    # select first 5 distances
-    k_distancias = distancias[:k]
-    print("Distancias:", distancias)
-    print("Distancias K:", k_distancias)
-
-    # determine classes of the 5 selected individuals
-    clases = []
-    for i in range(k):
-        index = s[i][0]
-        clase = y.iloc[index]
-        clases.append(clase)
-    print("Clases:\n", clases)
-    
-    # en base a la clase de los k seleccionados determinar la clase del individuo
-    resultado = np.max(clases)
-    print("Clase verdadera:", clase_ind.values[0])
-    print("Clase inferida:", resultado)
+        # en base a la clase de los k seleccionados determinar la clase del individuo
+        resultado = max(set(clases), key = clases.count)
+        print("Clase inferida:", resultado, "Clase verdadera:", clase_ind.values[0])
+        if resultado == clase_ind.values[0]:
+            print("Correcto")
+            coincidencias += 1
+        else:
+            print("Incorrecto")
+    print("coincidencias: ", coincidencias, " / 50")
 
 knn(5)
