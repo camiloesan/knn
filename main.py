@@ -36,7 +36,8 @@ def knn(k):
 
         # sort distancias from smallest to largest / may be wrong
         distancias.sort()        
-        temp_order_sample = training_sample.iloc[np.argsort(distancias)]
+        
+        temp_order_sample = training_sample.iloc[np.argsort(distancias)] # tal vez no los ordena bien
 
         # select first k distances
         k_distancias = distancias[:k]
@@ -57,6 +58,7 @@ def knn(k):
             coincidencias += 1
         else:
             print("Incorrecto")
+        print()
     print("coincidencias: ", coincidencias, " / 50")
 
-knn(5)
+knn(3)
