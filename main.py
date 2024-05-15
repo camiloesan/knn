@@ -31,12 +31,11 @@ def knn(k):
         clase_ind = y.iloc[idx]
         # calcular distancia euclidiana entre el primer individuo y los 100 seleccionados
         for i in range(len(training_sample)):
-            dist = calc_dist_euclidiana(individuo[1], training_sample.iloc[i])
+            dist = calc_dist_euclidiana(individuo, training_sample.iloc[i])
             distancias.append(dist)
 
         # sort distancias from smallest to largest / may be wrong
         distancias.sort()        
-        
         temp_order_sample = training_sample.iloc[np.argsort(distancias)] # tal vez no los ordena bien
 
         # select first k distances
