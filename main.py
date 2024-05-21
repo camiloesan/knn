@@ -37,7 +37,7 @@ def knn(k):
             distancias.append(dist)
 
         # ordenar distancias de menor a mayor
-        temp_order_sample = training_sample.iloc[np.argsort(distancias)] # tal vez no los ordena bien
+        temp_order_sample = training_sample.iloc[np.argsort(distancias)]
         distancias.sort()        
 
         # seleccionar las primeras k distancias
@@ -66,4 +66,4 @@ def knn(k):
     print("coincidencias: ", coincidencias, " / 50")
     print("Porcentaje de acierto: ", coincidencias / 50 * 100, "%")
 
-knn(1)
+knn(10)
